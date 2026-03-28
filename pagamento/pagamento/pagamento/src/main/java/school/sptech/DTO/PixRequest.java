@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class DataForPagamentoResquest {
+public class PixRequest {
 
     private Long idCurso;
 
@@ -18,9 +18,9 @@ public class DataForPagamentoResquest {
     private String metodoPagamento;
     @NotBlank
     private String status;
-    @NotBlank
-    private BigDecimal valor;
     @Positive
+    private BigDecimal valor;
+
     private LocalDateTime dataPagamento;
 
     public Long getIdCurso() {
