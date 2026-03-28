@@ -24,7 +24,6 @@ public class PagamentoService {
     }
 
     public Payment criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
-
         PaymentClient client = new PaymentClient();
         PaymentPayerRequest payer = PaymentPayerRequest.builder()
                 .email(email)
@@ -47,19 +46,11 @@ public class PagamentoService {
                         .dateOfExpiration(expiracao)
                         .description("Pagamento PIX teste")
                         // referenciando o id do pagamento da nossas base em um atributo do marcado pago
-                        .externalReference(pagamento.getId().toString())
+                        .externalReference(salvo.getId().toString())
                         .build();
 
         try {
             var resposta = client.create(request);
-
-            try {
-                // fazendo update do status para pedding
-                repository.save(salvo);
-            }catch (Exception e){
-                throw e;
-            }
-
             System.out.println("==== RESPOSTA DO MP ====");
             System.out.println("ID: " + resposta.getId());
             System.out.println("Status: " + resposta.getStatus());
