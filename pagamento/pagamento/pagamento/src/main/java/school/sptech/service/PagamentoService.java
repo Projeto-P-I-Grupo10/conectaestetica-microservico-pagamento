@@ -7,11 +7,12 @@ import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.resources.payment.Payment;
 import org.springframework.stereotype.Service;
-import school.sptech.DTO.DataForPagamentoResquest;
+import school.sptech.DTO.PixRequest;
+import school.sptech.model.Pagamento;
 import school.sptech.repository.IPagamentoRepository;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @Service
 public class PagamentoService {
@@ -22,26 +23,47 @@ public class PagamentoService {
         this.repository = repository;
     }
 
-    public Payment criarPagamentoPix(DataForPagamentoResquest dataForPagamentoResquest) throws Exception {
-        MercadoPagoConfig.setAccessToken("APP_USR-5423849464279431-032111-2124f85365cf2dff53299b538a7ae7d2-2562961358");
+    public Payment criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
 
         PaymentClient client = new PaymentClient();
         PaymentPayerRequest payer = PaymentPayerRequest.builder()
-                .email(dataForPagamentoResquest.getEmail())
+                .email(email)
                 .build();
-        OffsetDateTime expiracao = OffsetDateTime.now().plusMinutes(10);
+
+        System.out.println("Agora UTC: " + OffsetDateTime.now(ZoneOffset.UTC));
+        OffsetDateTime expiracao = OffsetDateTime
+                .now(ZoneOffset.UTC)
+                .plusMinutes(10);
+        System.out.println("Expiração enviada: " + expiracao);
+
+        // salva primero no banco para gerar o ID
+        Pagamento salvo = repository.save(pagamento);
 
         PaymentCreateRequest request =
                 PaymentCreateRequest.builder()
-                        .transactionAmount(dataForPagamentoResquest.getValor())
+                        .transactionAmount(pagamento.getValor())
                         .paymentMethodId("pix")
                         .payer(payer)
                         .dateOfExpiration(expiracao)
+                        .description("Pagamento PIX teste")
+                        // referenciando o id do pagamento da nossas base em um atributo do marcado pago
+                        .externalReference(pagamento.getId().toString())
                         .build();
 
         try {
             var resposta = client.create(request);
-            System.out.println(resposta);
+
+            try {
+                // fazendo update do status para pedding
+                repository.save(salvo);
+            }catch (Exception e){
+                throw e;
+            }
+
+            System.out.println("==== RESPOSTA DO MP ====");
+            System.out.println("ID: " + resposta.getId());
+            System.out.println("Status: " + resposta.getStatus());
+            System.out.println("Expiração MP: " + resposta.getDateOfExpiration());
             return resposta;
         } catch (MPApiException e) {
             System.out.println("STATUS: " + e.getStatusCode());
@@ -50,5 +72,17 @@ public class PagamentoService {
             throw e;
         }
     }
+
+    public Pagamento atulizarStatus(String status, Long id){
+        Pagamento pagamento = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("pagamento não encontrado"));
+
+        pagamento.setStatus(status);
+
+        repository.save(pagamento);
+
+        return pagamento;
+    }
+
 
 }
