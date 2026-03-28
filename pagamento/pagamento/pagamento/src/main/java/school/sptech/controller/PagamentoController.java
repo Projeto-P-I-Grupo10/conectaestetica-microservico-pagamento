@@ -43,58 +43,5 @@ public class PagamentoController {
         ));
     }
 
-    @RestController
-    @RequestMapping("/webhook")
-    public class WebhookController {
 
-        @PostMapping
-        public ResponseEntity<String> receberWebhook(@RequestBody Map<String, Object> payload) {
-
-            System.out.println("Webhook recebido: " + payload);
-
-            try {
-                // pega o data
-                Map<String, Object> data = (Map<String, Object>) payload.get("data");
-
-                if (data != null && data.get("id") != null) {
-
-                    Long paymentId = Long.valueOf(data.get("id").toString());
-
-                    PaymentClient client = new PaymentClient();
-                    Payment payment = client.get(paymentId);
-
-                    System.out.println("==== PAGAMENTO DETALHADO ====");
-                    System.out.println("ID: " + payment.getId());
-                    System.out.println("Status: " + payment.getStatus());
-                    System.out.println("Status Detail: " + payment.getStatusDetail());
-                    System.out.println("Valor: " + payment.getTransactionAmount());
-                    Long idPagamento = null;
-
-                    if (payment.getExternalReference() != null) {
-                        idPagamento = Long.valueOf(payment.getExternalReference());
-                    }
-
-
-                    // regra de negócio
-                    if ("approved".equals(payment.getStatus())) {
-                        System.out.println("✅ PAGAMENTO APROVADO");
-                        service.atulizarStatus(payment.getStatus(), idPagamento);
-                    }
-
-                    if ("pending".equals(payment.getStatus())) {
-                        System.out.println("⏳ AGUARDANDO PAGAMENTO");
-                    }
-
-                    if ("cancelled".equals(payment.getStatus())) {
-                        System.out.println("❌ PAGAMENTO REJEITADO");
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return ResponseEntity.ok("ok");
-        }
-    }
 }
