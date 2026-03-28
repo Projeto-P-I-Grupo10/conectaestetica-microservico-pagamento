@@ -1,23 +1,58 @@
 package school.sptech.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class DataForPagamentoResquest {
-    private BigDecimal valor;
-    private String descricao;
-    private String email;
-    private String nome;
-    private String sobrenome;
 
-    public DataForPagamentoResquest(BigDecimal valor, String descricao, String email, String nome, String sobrenome) {
-        this.valor = valor;
-        this.descricao = descricao;
-        this.email = email;
-        this.nome = nome;
-        this.sobrenome = sobrenome;
+    private Long idCurso;
+
+    private Long idUsuario;
+
+    @NotBlank
+    private String email;
+    @NotBlank
+    private String metodoPagamento;
+    @NotBlank
+    private String status;
+    @NotBlank
+    private BigDecimal valor;
+    @Positive
+    private LocalDateTime dataPagamento;
+
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public DataForPagamentoResquest() {
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public void setMetodoPagamento(String metodoPagamento) {
+        this.metodoPagamento = metodoPagamento;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public BigDecimal getValor() {
@@ -28,12 +63,12 @@ public class DataForPagamentoResquest {
         this.valor = valor;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
     }
 
     public String getEmail() {
@@ -42,21 +77,5 @@ public class DataForPagamentoResquest {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getSobrenome() {
-        return sobrenome;
-    }
-
-    public void setSobrenome(String sobrenome) {
-        this.sobrenome = sobrenome;
     }
 }

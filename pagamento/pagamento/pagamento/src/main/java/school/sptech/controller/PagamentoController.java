@@ -19,15 +19,13 @@ public class PagamentoController {
 
     @PostMapping("/pix")
     public ResponseEntity<Map<String, Object>> gerarPix(@RequestBody DataForPagamentoResquest body) throws Exception {
-
         var payment = service.criarPagamentoPix(body);
 
         var transactionData = payment.getPointOfInteraction().getTransactionData();
 
         return ResponseEntity.ok(Map.of(
                 "qr_code", transactionData.getQrCode(),
-                "qr_code_base64", transactionData.getQrCodeBase64(),
-                "ticket_url", transactionData.getTicketUrl()
+                "qr_code_base64", transactionData.getQrCodeBase64()
         ));
     }
 
