@@ -8,12 +8,19 @@ import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.resources.payment.Payment;
 import org.springframework.stereotype.Service;
 import school.sptech.DTO.DataForPagamentoResquest;
+import school.sptech.repository.IPagamentoRepository;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Service
 public class PagamentoService {
+
+    private final IPagamentoRepository repository;
+
+    public PagamentoService(IPagamentoRepository repository) {
+        this.repository = repository;
+    }
 
     public Payment criarPagamentoPix(DataForPagamentoResquest dataForPagamentoResquest) throws Exception {
         MercadoPagoConfig.setAccessToken("APP_USR-5423849464279431-032111-2124f85365cf2dff53299b538a7ae7d2-2562961358");
@@ -37,10 +44,10 @@ public class PagamentoService {
                         .build();
 
         try {
-            return client.create(request);
-
+            var resposta = client.create(request);
+            System.out.println(resposta);
+            return resposta;
         } catch (MPApiException e) {
-
             System.out.println("STATUS: " + e.getStatusCode());
             System.out.println("RESPONSE: " + e.getApiResponse().getContent());
 
