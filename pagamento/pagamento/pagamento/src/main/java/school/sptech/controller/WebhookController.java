@@ -49,6 +49,11 @@ public class WebhookController {
                     idPagamento = Long.valueOf(payment.getExternalReference());
                 }
 
+                if (idPagamento == null) {
+                    System.out.println("PIX sem externalReference — ignorando");
+                    return ResponseEntity.ok("ok");
+                }
+
                 if ("approved".equals(payment.getStatus())) {
                     System.out.println("✅ PAGAMENTO APROVADO");
                     service.atulizarStatus("APPROVED", idPagamento);
