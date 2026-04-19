@@ -25,6 +25,7 @@ public class PagamentoService {
     public Payment criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
         MercadoPagoConfig.setAccessToken("APP_USR-5423849464279431-032111-2124f85365cf2dff53299b538a7ae7d2-2562961358");
         PaymentClient client = new PaymentClient();
+
         PaymentPayerRequest payer = PaymentPayerRequest.builder()
                 .email(email)
                 .build();
