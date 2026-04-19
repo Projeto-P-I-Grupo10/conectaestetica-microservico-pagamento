@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import school.sptech.DTO.CartaoResquest;
 import school.sptech.DTO.PixRequest;
 import school.sptech.model.Pagamento;
-import school.sptech.model.PagamentoCartao;
-import school.sptech.service.PagamentoCartaoService;
 import school.sptech.service.PagamentoService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +18,10 @@ import com.mercadopago.resources.payment.Payment;
 public class PagamentoController {
 
     private final PagamentoService service;
-    private final PagamentoCartaoService serviceCartao;
+   // private final PagamentoCartaoService serviceCartao;
 
-    public PagamentoController(PagamentoService service, PagamentoCartaoService serviceCartao) {
+    public PagamentoController(PagamentoService service) {
         this.service = service;
-        this.serviceCartao = serviceCartao;
     }
 
     @PostMapping("/pix")
@@ -48,36 +45,36 @@ public class PagamentoController {
         ));
     }
 
-    @PostMapping("/cartao")
-    public ResponseEntity<Map<String, Object>> realizarPagamento(
-            @RequestBody @Valid CartaoResquest dto) throws Exception {
-
-        PagamentoCartao pagamento = new PagamentoCartao();
-        pagamento.setIdCurso(dto.getIdCurso());
-        pagamento.setIdUsuario(dto.getIdUsuario());
-        pagamento.setMetodoPagamento("credit_card");
-        pagamento.setStatus("pending");
-        pagamento.setValor(dto.getValor());
-        pagamento.setToken(dto.getToken());
-        pagamento.setParcelas(dto.getParcelas());
-        pagamento.setBandeira(dto.getPaymentMethodId());
-        pagamento.setEmailPagador(dto.getEmailPagador());
-        pagamento.setIssuerId(dto.getIssuerId());
-        pagamento.setTipoDocumento(dto.getTipoDocumento());
-        pagamento.setNumeroDocumento(dto.getNumeroDocumento());
-        pagamento.setDataPagamento(LocalDateTime.now());
-
-        Payment resposta = serviceCartao.realizarPagamentoCartao(pagamento);
-
-        return ResponseEntity.status(200).body(Map.of(
-                "id", resposta.getId(),
-                "status", resposta.getStatus(),
-                "status_detalhe", resposta.getStatusDetail(),
-                "valor", resposta.getTransactionAmount(),
-                "parcelas", resposta.getInstallments(),
-                "bandeira", resposta.getPaymentMethodId()
-        ));
-    }
+//    @PostMapping("/cartao")
+//    public ResponseEntity<Map<String, Object>> realizarPagamento(
+//            @RequestBody @Valid CartaoResquest dto) throws Exception {
+//
+//        PagamentoCartao pagamento = new PagamentoCartao();
+//        pagamento.setIdCurso(dto.getIdCurso());
+//        pagamento.setIdUsuario(dto.getIdUsuario());
+//        pagamento.setMetodoPagamento("credit_card");
+//        pagamento.setStatus("pending");
+//        pagamento.setValor(dto.getValor());
+//        pagamento.setToken(dto.getToken());
+//        pagamento.setParcelas(dto.getParcelas());
+//        pagamento.setBandeira(dto.getPaymentMethodId());
+//        pagamento.setEmailPagador(dto.getEmailPagador());
+//        pagamento.setIssuerId(dto.getIssuerId());
+//        pagamento.setTipoDocumento(dto.getTipoDocumento());
+//        pagamento.setNumeroDocumento(dto.getNumeroDocumento());
+//        pagamento.setDataPagamento(LocalDateTime.now());
+//
+//        Payment resposta = serviceCartao.realizarPagamentoCartao(pagamento);
+//
+//        return ResponseEntity.status(200).body(Map.of(
+//                "id", resposta.getId(),
+//                "status", resposta.getStatus(),
+//                "status_detalhe", resposta.getStatusDetail(),
+//                "valor", resposta.getTransactionAmount(),
+//                "parcelas", resposta.getInstallments(),
+//                "bandeira", resposta.getPaymentMethodId()
+//        ));
+//    }
 
 
 }
