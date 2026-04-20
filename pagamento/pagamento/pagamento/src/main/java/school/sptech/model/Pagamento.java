@@ -18,7 +18,15 @@ public class Pagamento {
     private String status;
     private BigDecimal valor;
     private LocalDateTime dataPagamento;
+    private Long idMercadoPago;
 
+    public Long getIdMercadoPago() {
+        return idMercadoPago;
+    }
+
+    public void setIdMercadoPago(Long idMercadoPago) {
+        this.idMercadoPago = idMercadoPago;
+    }
     public Long getId() {
         return id;
     }
