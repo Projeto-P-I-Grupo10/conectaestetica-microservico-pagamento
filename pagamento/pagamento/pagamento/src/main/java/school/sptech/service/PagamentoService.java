@@ -7,6 +7,7 @@ import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.resources.payment.Payment;
 import org.springframework.stereotype.Service;
+import school.sptech.DTO.PagamentoResponse;
 import school.sptech.model.Pagamento;
 import school.sptech.repository.IPagamentoRepository;
 
@@ -23,7 +24,7 @@ public class PagamentoService {
         this.repository = repository;
     }
 
-    public Payment criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
+    public PagamentoResponse criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
         MercadoPagoConfig.setAccessToken("APP_USR-5423849464279431-032111-2124f85365cf2dff53299b538a7ae7d2-2562961358");
         Optional<Pagamento> existente = repository.findByIdUsuarioAndIdCursoAndStatus(
                 pagamento.getIdUsuario(),
@@ -34,6 +35,7 @@ public class PagamentoService {
         if (existente.isPresent()) {
             throw new IllegalStateException("Já existe um pagamento PIX pendente para este curso e usuário.");
         }
+
         PaymentClient client = new PaymentClient();
 
         PaymentPayerRequest payer = PaymentPayerRequest.builder()
@@ -62,6 +64,8 @@ public class PagamentoService {
 
         try {
             var resposta = client.create(request);
+            var transactionData = resposta.getPointOfInteraction().getTransactionData();
+            PagamentoResponse pagamentoResponse = new PagamentoResponse(transactionData.getQrCodeBase64(), transactionData.getQrCode());
             System.out.println("==== RESPOSTA DO MP ====");
             System.out.println("ID: " + resposta.getId());
             System.out.println("Status: " + resposta.getStatus());
@@ -69,7 +73,7 @@ public class PagamentoService {
             salvo.setIdMercadoPago(resposta.getId());
             repository.save(salvo);
 
-            return resposta;
+            return pagamentoResponse;
         } catch (MPApiException e) {
             System.out.println("STATUS: " + e.getStatusCode());
             System.out.println("RESPONSE: " + e.getApiResponse().getContent());

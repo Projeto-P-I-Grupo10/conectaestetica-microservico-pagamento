@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class PixRequest {
+public class PagamentoRequest {
 
     private Long idCurso;
 

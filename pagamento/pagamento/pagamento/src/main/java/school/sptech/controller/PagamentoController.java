@@ -1,18 +1,15 @@
 package school.sptech.controller;
 
-import com.mercadopago.client.payment.PaymentClient;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import school.sptech.DTO.CartaoResquest;
-import school.sptech.DTO.PixRequest;
+import school.sptech.DTO.PagamentoRequest;
+import school.sptech.DTO.PagamentoResponse;
 import school.sptech.model.Pagamento;
 import school.sptech.service.PagamentoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import com.mercadopago.resources.payment.Payment;
 
 @RestController
 @RequestMapping("/pagamentos")
@@ -27,28 +24,14 @@ public class PagamentoController {
     }
 
     @PostMapping("/pix")
-    public ResponseEntity<Map<String, Object>> gerarPix(@RequestBody PixRequest body) throws Exception {
-        try {
+    public ResponseEntity<PagamentoResponse> gerarPix(@RequestBody PagamentoRequest body) throws Exception {
             Pagamento pagamento = new Pagamento();
             pagamento.setIdCurso(body.getIdCurso());
             pagamento.setIdUsuario(body.getIdUsuario());
             pagamento.setMetodoPagamento(body.getMetodoPagamento());
             pagamento.setValor(body.getValor());
             pagamento.setDataPagamento(LocalDateTime.now());
-
-            var payment = service.criarPagamentoPix(pagamento, body.getEmail());
-            var transactionData = payment.getPointOfInteraction().getTransactionData();
-
-            return ResponseEntity.ok(Map.of(
-                    "qr_code", transactionData.getQrCode(),
-                    "qr_code_base64", transactionData.getQrCodeBase64()
-            ));
-        } catch (IllegalStateException e) {
-            // já existe pagamento pendente
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("erro", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("erro", "Erro ao gerar pagamento PIX"));
-        }
+            return ResponseEntity.status(200).body(service.criarPagamentoPix(pagamento, body.getEmail()));
     }
 
     @GetMapping("/status/{idCurso}/{idUsuario}")
