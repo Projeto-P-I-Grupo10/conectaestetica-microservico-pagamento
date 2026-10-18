@@ -20,6 +20,28 @@ public class Pagamento {
     private LocalDateTime dataPagamento;
     private Long idMercadoPago;
 
+    @Column(columnDefinition = "TEXT")
+    private String qrCode;
+
+    @Column(columnDefinition = "TEXT")
+    private String qrCodeBase64;
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public String getQrCodeBase64() {
+        return qrCodeBase64;
+    }
+
+    public void setQrCodeBase64(String qrCodeBase64) {
+        this.qrCodeBase64 = qrCodeBase64;
+    }
+
     public Long getIdMercadoPago() {
         return idMercadoPago;
     }

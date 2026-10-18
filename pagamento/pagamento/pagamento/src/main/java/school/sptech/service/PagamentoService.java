@@ -1,16 +1,19 @@
 package school.sptech.service;
 
-import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.payment.PaymentCreateRequest;
 import com.mercadopago.client.payment.PaymentPayerRequest;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.resources.payment.Payment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import school.sptech.DTO.PagamentoCriadoMessage;
 import school.sptech.DTO.PagamentoResponse;
 import school.sptech.model.Pagamento;
 import school.sptech.repository.IPagamentoRepository;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
@@ -18,14 +21,40 @@ import java.util.Optional;
 @Service
 public class PagamentoService {
 
+    private static final Logger log = LoggerFactory.getLogger(PagamentoService.class);
+
     private final IPagamentoRepository repository;
 
     public PagamentoService(IPagamentoRepository repository) {
         this.repository = repository;
     }
 
+    public void processarPagamentoCriado(PagamentoCriadoMessage mensagem) throws Exception {
+        log.info("[PAGAMENTO] Processando pagamento.criado para idCurso={} idUsuario={}",
+                mensagem.idCurso(), mensagem.idUsuario());
+
+        Pagamento pagamento = new Pagamento();
+        pagamento.setIdCurso(mensagem.idCurso());
+        pagamento.setIdUsuario(mensagem.idUsuario());
+        pagamento.setMetodoPagamento(mensagem.metodoPagamento());
+        pagamento.setValor(mensagem.valor());
+        pagamento.setDataPagamento(LocalDateTime.now());
+
+        criarPagamentoPix(pagamento, mensagem.email());
+    }
+
+    /**
+     * Retorna o QR Code persistido para o par (idCurso, idUsuario), usado pelo
+     * polling do front. Lanca se nao houver pagamento para a chave.
+     */
+    public PagamentoResponse consultarQrCode(Long idCurso, Long idUsuario) {
+        Pagamento pagamento = repository.findByIdCursoAndIdUsuario(idCurso, idUsuario)
+                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
+
+        return new PagamentoResponse(pagamento.getQrCodeBase64(), pagamento.getQrCode());
+    }
+
     public PagamentoResponse criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
-        MercadoPagoConfig.setAccessToken("APP_USR-5423849464279431-032111-2124f85365cf2dff53299b538a7ae7d2-2562961358");
         Optional<Pagamento> existente = repository.findByIdUsuarioAndIdCursoAndStatus(
                 pagamento.getIdUsuario(),
                 pagamento.getIdCurso(),
@@ -71,6 +100,9 @@ public class PagamentoService {
             System.out.println("Status: " + resposta.getStatus());
             System.out.println("Expiração MP: " + resposta.getDateOfExpiration());
             salvo.setIdMercadoPago(resposta.getId());
+            // persiste o QR para que o polling do front consiga recupera-lo depois
+            salvo.setQrCode(transactionData.getQrCode());
+            salvo.setQrCodeBase64(transactionData.getQrCodeBase64());
             repository.save(salvo);
 
             return pagamentoResponse;
