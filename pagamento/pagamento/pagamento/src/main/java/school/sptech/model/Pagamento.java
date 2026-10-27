@@ -26,6 +26,16 @@ public class Pagamento {
     @Column(columnDefinition = "TEXT")
     private String qrCodeBase64;
 
+    private LocalDateTime dataExpiracao;
+
+    public LocalDateTime getDataExpiracao() {
+        return dataExpiracao;
+    }
+
+    public void setDataExpiracao(LocalDateTime dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
     public String getQrCode() {
         return qrCode;
     }
