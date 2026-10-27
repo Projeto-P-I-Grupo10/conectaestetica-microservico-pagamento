@@ -44,6 +44,14 @@ public class PagamentoController {
         return ResponseEntity.ok(Map.of("status", status));
     }
 
+    @GetMapping("/{idCurso}/{idUsuario}/qrcode")
+    public ResponseEntity<PagamentoResponse> consultarQrCode(
+            @PathVariable Long idCurso,
+            @PathVariable Long idUsuario) {
+
+        return ResponseEntity.ok(service.consultarQrCode(idCurso, idUsuario));
+    }
+
 
 
 //    @PostMapping("/cartao")
