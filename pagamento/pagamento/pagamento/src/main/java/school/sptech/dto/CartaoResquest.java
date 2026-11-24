@@ -1,4 +1,4 @@
-package school.sptech.DTO;
+package school.sptech.dto;
 
 import jakarta.validation.constraints.*;
 
