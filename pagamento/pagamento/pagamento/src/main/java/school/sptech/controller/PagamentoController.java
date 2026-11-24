@@ -1,9 +1,8 @@
 package school.sptech.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import school.sptech.DTO.PagamentoRequest;
-import school.sptech.DTO.PagamentoResponse;
+import school.sptech.dto.PagamentoRequest;
+import school.sptech.dto.PagamentoResponse;
 import school.sptech.model.Pagamento;
 import school.sptech.service.PagamentoService;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class PagamentoController {
     @PostMapping("/pix")
     public ResponseEntity<PagamentoResponse> gerarPix(@RequestBody PagamentoRequest body) throws Exception {
             Pagamento pagamento = new Pagamento();
-            pagamento.setIdCurso(body.getIdCurso());
+            pagamento.setIdTurma(body.getIdCurso());
             pagamento.setIdUsuario(body.getIdUsuario());
             pagamento.setMetodoPagamento(body.getMetodoPagamento());
             pagamento.setValor(body.getValor());

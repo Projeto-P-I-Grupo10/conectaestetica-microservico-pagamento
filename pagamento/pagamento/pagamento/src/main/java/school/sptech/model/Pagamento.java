@@ -6,13 +6,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "pagamento_pix")
+@Table(name = "pagamento")
 public class Pagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long idCurso;
+    private Long idTurma;
     private Long idUsuario;
     private String metodoPagamento;
     private String status;
@@ -59,6 +59,7 @@ public class Pagamento {
     public void setIdMercadoPago(Long idMercadoPago) {
         this.idMercadoPago = idMercadoPago;
     }
+
     public Long getId() {
         return id;
     }
@@ -67,12 +68,12 @@ public class Pagamento {
         this.id = id;
     }
 
-    public Long getIdCurso() {
-        return idCurso;
+    public Long getIdTurma() {
+        return idTurma;
     }
 
-    public void setIdCurso(Long idCurso) {
-        this.idCurso = idCurso;
+    public void setIdTurma(Long idTurma) {
+        this.idTurma = idTurma;
     }
 
     public Long getIdUsuario() {

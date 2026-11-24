@@ -1,4 +1,4 @@
-package school.sptech.DTO;
+package school.sptech.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;

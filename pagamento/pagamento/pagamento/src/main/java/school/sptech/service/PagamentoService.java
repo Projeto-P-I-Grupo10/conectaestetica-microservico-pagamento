@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import school.sptech.DTO.PagamentoCriadoMessage;
-import school.sptech.DTO.PagamentoResponse;
+import school.sptech.dto.PagamentoCriadoMessage;
+import school.sptech.dto.PagamentoResponse;
 import school.sptech.model.Pagamento;
 import school.sptech.repository.IPagamentoRepository;
 
@@ -43,7 +43,7 @@ public class PagamentoService {
                 mensagem.idCurso(), mensagem.idUsuario());
 
         Pagamento pagamento = new Pagamento();
-        pagamento.setIdCurso(mensagem.idCurso());
+        pagamento.setIdTurma(mensagem.idCurso());
         pagamento.setIdUsuario(mensagem.idUsuario());
         pagamento.setMetodoPagamento(mensagem.metodoPagamento());
         pagamento.setValor(mensagem.valor());
@@ -53,11 +53,11 @@ public class PagamentoService {
     }
 
     /**
-     * Retorna o QR Code persistido para o par (idCurso, idUsuario), usado pelo
+     * Retorna o QR Code persistido para o par (idTurma, idUsuario), usado pelo
      * polling do front. Lanca se nao houver pagamento para a chave.
      */
-    public PagamentoResponse consultarQrCode(Long idCurso, Long idUsuario) {
-        Pagamento pagamento = repository.findFirstByIdCursoAndIdUsuarioOrderByIdDesc(idCurso, idUsuario)
+    public PagamentoResponse consultarQrCode(Long idTurma, Long idUsuario) {
+        Pagamento pagamento = repository.findFirstByIdTurmaAndIdUsuarioOrderByIdDesc(idTurma, idUsuario)
                 .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
 
         return new PagamentoResponse(
@@ -67,9 +67,9 @@ public class PagamentoService {
     }
 
     public PagamentoResponse criarPagamentoPix(Pagamento pagamento, String email) throws Exception {
-        Optional<Pagamento> existente = repository.findByIdUsuarioAndIdCursoAndStatus(
+        Optional<Pagamento> existente = repository.findByIdUsuarioAndIdTurmaAndStatus(
                 pagamento.getIdUsuario(),
-                pagamento.getIdCurso(),
+                pagamento.getIdTurma(),
                 "pendente"
         );
 
@@ -142,8 +142,8 @@ public class PagamentoService {
         return pagamento;
     }
 
-    public String consultarStatusPagamento(Long idCurso, Long idUsuario) throws Exception {
-        Pagamento pagamento = repository.findFirstByIdCursoAndIdUsuarioOrderByIdDesc(idCurso, idUsuario)
+    public String consultarStatusPagamento(Long idTurma, Long idUsuario) throws Exception {
+        Pagamento pagamento = repository.findFirstByIdTurmaAndIdUsuarioOrderByIdDesc(idTurma, idUsuario)
                 .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
 
         PaymentClient client = new PaymentClient();
